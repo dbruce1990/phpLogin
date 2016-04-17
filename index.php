@@ -1,8 +1,7 @@
 <pre>
 <?php
   session_start();
-  $_SESSION['loggedIn'] = false;
-  print_r($_SERVER);
+  // print_r($_SERVER);
 ?>
 </pre>
 <html>

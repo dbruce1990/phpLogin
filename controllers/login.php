@@ -1,14 +1,10 @@
 <?php
-  session_start();
+require_once '../models/response.php';
+
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if(isset($_POST['username']) && isset($_POST['password'])){
-      // if($_SESSION['dbUsername'] === $_POST['username'] && $_SESSION['dbPassword'] === $_POST['password']){
-      //   $_SESSION['username'] = $_POST['username'];
-      //   $_SESSION['loggedIn'] = true;
-      //   print_r($_SESSION);
-      // }else {
-      //   die("Invalid username or password.");
-      // }
+      session_start();
+
       require_once '../databaseHandler.php';
       $dbh = DatabaseHandler::getInstance();
       $pdo = $dbh->getPDO();
@@ -19,16 +15,16 @@
         if($stmt->execute($params)){
           $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
           if(count($results) > 0){
-            print_r($results);
+            echo new Response(true, null, $results);
           }else{
-            die("Invalid username or password.");
+            echo new Response(false, "Invalid username or password.");
           }
         }
       }catch(PDOException $e){
-        echo $e-getCode();
+        // echo $e-getCode();
       }
     }else{
-      die("Woops something went wrong while trying to log you in.");
+      echo new Response(false, "Woops something went wrong while trying to log you in.");
     }
   }
 ?>
