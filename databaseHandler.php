@@ -1,9 +1,9 @@
 <?php
 class DatabaseHandler{
   private static $instance = null;
-  private $dbh = null;
-  private $user = "root";
-  private $pass = "";
+  private $pdo;
+  private $user;
+  private $pass;
 
   public static function getInstance()
   {
@@ -13,27 +13,44 @@ class DatabaseHandler{
     return self::$instance;
   }
 
-  public function getDBHandler(){
-    if($this->dbh == null){
-      $this=>dbh = new PDO('mysql:host=localhost;dbname=phpLogin', $this->user, $this->pass);
-    }
-    else{
-      return $this->dbh;
+  public function getPDO(){
+    if($this->pdo != null){
+      return $this->pdo;
     }
   }
 
   private function __construct(){
+    $config = json_decode(file_get_contents('config.json'), true);
+    if($config !== false){
+      $dsn = $config["database"]["dsn"];
+      $username = $config["database"]["username"];
+      $password = $config["database"]["password"];
 
-  }
-
-  private function init(){
-
+      try{
+        $this->pdo = new PDO($dsn, $username, $password);
+        $this->createTables();
+      }catch(PDOException $e){
+        die("There was an error connecting to the database.");
+      }
+    }
   }
 
   private function createTables(){
     $tables = array(
-      "usersTable" => "CREATE TABLE IF NOT EXISTS `phpLogin`.`users` ( `id` INT NOT NULL AUTO_INCREMENT , `user_name` VARCHAR NOT NULL , `password_hash` VARCHAR NOT NULL , `last_login` DATETIME NOT NULL , PRIMARY KEY (`id`)) ENGINE = MyISAM CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+      "usersTable" => "CREATE TABLE IF NOT EXISTS `users` (
+        `id` INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `user_name` VARCHAR(50) NOT NULL,
+        `password_hash` VARCHAR(50) NOT NULL,
+        `last_login` DATETIME NOT NULL) ENGINE=InnoDB COLLATE utf8_unicode_ci;"
     );
+    foreach($tables as $table){
+      try{
+        $result = $this->pdo->exec($table);
+        echo $result;
+      }catch(PDOException $e){
+        die("Couldn't create {$table}");
+      }
+    }
   }
 }
 ?>
