@@ -1,7 +1,8 @@
 {
   "database": {
-    "dsn": "mysql:host=localhost;dbname=phplogin",
+    "dsn": "mysql:host=localhost;",
     "username": "root",
-    "password": ""
+    "password": "",
+    "dbname": "phplogin"
   }
 }

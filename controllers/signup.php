@@ -8,25 +8,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $pdo = $dbh->getPDO();
 
       try{
-        $stmt = $pdo->prepare("INSERT INTO `users` (`user_name`, `password_hash`) VALUES (?, ?);");
+        $stmt = $pdo->prepare("INSERT INTO `users` (`user_name`, `password_hash`) VALUES (?, ?)");
         $params = array($_POST['username'], $_POST['password']);
-        $stmt->execute($params);
-        print_r($stmt->errorInfo());
+        if($stmt->execute($params)){
+          echo "Success";
+        }
       }catch(PDOException $e){
-        print_r($e);
+        echo $e->getCode();
         switch($e->getCode()){
-          case "23505": //duplicate found.
+          case "23000": //duplicate found.
             echo "Username already taken.";
             break;
           default:
-            echo "Woops, there was an error with the database.";
+            die("Woops, there was an error with the database.");
         }
       }
 
     }
-    // header("Location: ../index.php");
   }else{
-    die("There was an error during registration");
+    die("There was an error during registration.");
   }
 }
 ?>

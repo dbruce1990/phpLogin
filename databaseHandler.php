@@ -16,6 +16,7 @@ class DatabaseHandler{
       $config = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . 'phplogin/config.json'), true); // Get config.json as assoc array
       if($config !== false){ // parse $config
         $dsn = $config["database"]["dsn"];
+        $dbname= $config["database"]["dbname"];
         $username = $config["database"]["username"];
         $password = $config["database"]["password"];
 
@@ -23,6 +24,8 @@ class DatabaseHandler{
           $this->pdo = new PDO($dsn, $username, $password); //if parsing config.json was successful, attempt to connect
           $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+          $this->pdo->query("CREATE DATABASE IF NOT EXISTS $dbname;");
+          $this->pdo->query("use $dbname;");
           $this->setupTables();
         }catch(PDOException $e){
           die("There was an error connecting to the database.");
@@ -41,13 +44,13 @@ class DatabaseHandler{
         `id` INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
         `user_name` VARCHAR(50) NOT NULL UNIQUE,
         `password_hash` VARCHAR(50) NOT NULL,
-        `last_login` DATETIME NOT NULL) ENGINE=InnoDB COLLATE utf8_unicode_ci;"
+        `last_login` DATETIME DEFAULT NOW() NOT NULL) ENGINE=InnoDB COLLATE utf8_unicode_ci;"
     );
     foreach($tables as $table){
       try{
         $result = $this->pdo->exec($table);
       }catch(PDOException $e){
-        die("Couldn't create {$table}");
+        die("Couldn't create $table");
       }
     }
   }
