@@ -1,5 +1,8 @@
 <?php
   session_start();
+
+  require_once '../databaseHandler.php';
+  $pdo = DatabaseHandler::getPDO();
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION)) {
     if(isset($_POST['username']) && isset($_POST['password'])){
       if($_SESSION['dbUsername'] === $_POST['username'] && $_SESSION['dbPassword'] === $_POST['password']){

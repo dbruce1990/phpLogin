@@ -1,8 +1,10 @@
+<pre>
 <?php
   session_start();
   $_SESSION['loggedIn'] = false;
-  print_r($_SESSION);
+  print_r($_SERVER);
 ?>
+</pre>
 <html>
 <body>
   <ul>
