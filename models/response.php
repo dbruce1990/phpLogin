@@ -2,8 +2,8 @@
 class Response{
   private $success;
   private $data;
-  private $error;
   private $message;
+  private $error;
 
   public function __construct($success = null, $message = null, $data = null, $error = null){
     $this->setSuccess($success);

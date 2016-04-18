@@ -24,7 +24,7 @@ class DatabaseHandler{
           $this->pdo = new PDO($dsn, $username, $password); //if parsing config.json was successful, attempt to connect
           $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-          $this->pdo->query("CREATE DATABASE IF NOT EXISTS $dbname;");
+          $this->pdo->query("CREATE DATABASE IF NOT EXISTS $dbname DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci; SET default_storage_engine=INNODB;");
           $this->pdo->query("use $dbname;");
           $this->setupTables();
         }catch(PDOException $e){
@@ -38,22 +38,34 @@ class DatabaseHandler{
 
   private function __construct(){}
 
-  private function setupTables(){
-    $tables = array(
-      "usersTable" => "CREATE TABLE IF NOT EXISTS `users` (
-        `id` INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
-        `user_name` VARCHAR(50) NOT NULL UNIQUE,
-        `password_hash` VARCHAR(50) NOT NULL,
-        `last_login` DATETIME DEFAULT NOW() NOT NULL) ENGINE=InnoDB COLLATE utf8_unicode_ci;"
-    );
-    foreach($tables as $table){
-      try{
-        $result = $this->pdo->exec($table);
-      }catch(PDOException $e){
-        die("Couldn't create $table");
+    private function setupTables(){
+      $tables = array(
+        "usersTable" => "CREATE TABLE IF NOT EXISTS `users` (
+          `id` INT(10) NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
+          `user_name` VARCHAR(32) NOT NULL UNIQUE,
+          `password_hash` VARCHAR(255) NOT NULL,
+          `last_login` DATETIME DEFAULT NOW() NOT NULL);",
+          "deleteMe" => "CREATE TABLE IF NOT EXISTS deleteMe (x VARCHAR(10), y VARCHAR(10), z VARCHAR(10));"
+        );
+        foreach($tables as $table){
+          try{
+            $result = $this->pdo->exec($table);
+          }catch(PDOException $e){
+            die("Couldn't create $table");
+          }
+        }
       }
-    }
-  }
 
-}
-?>
+      public function errorHandler($e){
+        // if(get_type($e) == "PDOException"){}
+        switch($e->getCode()){
+          case "23000": //duplicate found.
+          return new Response(false, "Username already taken.", $e, $e->getCode());
+          break;
+          default:
+          return new Response(false, "Woops, there was an error with the database.", $e, $e->getCode());
+        }
+      }
+
+    }
+    ?>
