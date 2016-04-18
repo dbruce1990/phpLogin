@@ -24,7 +24,7 @@ class Response{
     if(gettype($success) == "boolean"){
       $this->success = $success;
     }else if($success != null){
-        throw new Exception("Response->success must be of type Boolean");
+      throw new Exception("Response->success must be of type Boolean");
     }
   }
 
@@ -52,7 +52,7 @@ class Response{
     if(gettype($message) == "string"){
       $this->message = $message;
     }elseif($message != null){
-        throw new Exception("Response->message must be of type String.");
+      throw new Exception("Response->message must be of type String.");
     }
   }
 }

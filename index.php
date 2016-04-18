@@ -1,9 +1,9 @@
-<pre>
-<?php
+<!-- <pre> -->
+  <?php
   session_start();
   // print_r($_SERVER);
-?>
-</pre>
+  ?>
+<!-- </pre> -->
 <html>
 <body>
   <ul>
