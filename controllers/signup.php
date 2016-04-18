@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $model = new UserModel();
     $model->setUsername($_POST['username']);
     $model->setPassword($_POST['password'], $_POST['password_confirmed']);
-    $success = $model->save();
+    $result = $model->save();
+    echo $result;
   }
 }
 ?>

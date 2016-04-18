@@ -1,4 +1,5 @@
 <?php
+require_once 'base.php';
 class UserModel extends BaseModel{
   private $id;
   private $username;
@@ -30,7 +31,7 @@ class UserModel extends BaseModel{
     }
   }
 
-  public function getLastLogin(){ $re}
+  public function getLastLogin(){ return $this->last_login; }
   public function setLastLogin($date){
     if(!empty($date)){
       $this->last_login = $date;
@@ -49,12 +50,12 @@ class UserModel extends BaseModel{
       $stmt = $this->pdo->prepare("INSERT INTO `users` (`user_name`, `password_hash`) VALUES (?, ?)");
       $params = array($this->username, $this->password);
       if($stmt->execute($params)){
-        $this->id = $pdo->lastInsertId();
+        $this->id = $this->pdo->lastInsertId();
         return new Response(true, "Successfuly created new User.", $this->safe(), null);
       }
       return new Response(false, "Couldn't create new User.", null, null);
     }catch(PDOException $e){
-      return $db->errorHandler($e);
+      return $this->db->errorHandler($e);
     }
   }
 }
