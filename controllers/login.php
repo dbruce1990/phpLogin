@@ -1,6 +1,4 @@
 <?php
-require_once '../models/response.php';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if(isset($_POST['username']) && isset($_POST['password'])){
     session_start();

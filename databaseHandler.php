@@ -28,7 +28,8 @@ class DatabaseHandler{
           $this->pdo->query("use $dbname;");
           $this->setupTables();
         }catch(PDOException $e){
-          die("There was an error connecting to the database.");
+          // die("There was an error connecting to the database.");
+          $this->errorHandler($e);
         }
 
       }
@@ -51,21 +52,22 @@ class DatabaseHandler{
           try{
             $result = $this->pdo->exec($table);
           }catch(PDOException $e){
-            die("Couldn't create $table");
+            // die("Couldn't create $table");
+            $this->errorHandler($e);
           }
         }
       }
 
       public function errorHandler($e){
-          echo "PDOExceptionasdf";
         switch($e->getCode()){
           case "23000": //duplicate found.
-          echo new Response(false, "Username already taken.", $e, $e->getCode());
+          // echo new Response(false, "Username already taken.", $e, $e->getCode());
+          http_response_code(409);
           break;
           default:
-          echo new Response(false, "Woops, an error occured in the database.", $e, $e->getCode());
+          // echo new Response(false, "Woops, an error occured in the database.", $e, $e->getCode());
+          http_response_code(500);
         }
-        exit(); // an error occured and we responded. Lets end script so we can handle it in client
       }
 
     }
