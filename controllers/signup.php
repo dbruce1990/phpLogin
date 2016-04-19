@@ -8,9 +8,10 @@ $pdo = $dbh->getPDO();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password_confirmed'])){
     $model = new UserModel();
-    $model->setUsername($_POST['username']);
-    $model->setPassword($_POST['password'], $_POST['password_confirmed']);
-    $result = $model->save();
+    if($model->setPassword($_POST['password'], $_POST['password_confirmed'])){
+      $model->setUsername($_POST['username']);
+      $result = $model->create();
+    }
     echo $result;
   }
 }

@@ -26,9 +26,13 @@ class UserModel extends BaseModel{
 
   public function getPassword(){ return $this->password; }
   public function setPassword($password, $password_confirmed){
-    if(!empty($password) && !empty($password_confirmed) && $password === $password_confirmed){
-      $this->password = $password;
+    if($password === $password_confirmed){
+      if(validPassword($password) && validPassword($password_confirmed)){
+        $this->password = $password;
+        return true;
+      }
     }
+    return false;
   }
 
   public function getLastLogin(){ return $this->last_login; }
@@ -45,17 +49,29 @@ class UserModel extends BaseModel{
     return $result;
   }
 
-  public function save(){
+  public function create(){
     try{
+      // Prepare SQL statement for execution
       $stmt = $this->pdo->prepare("INSERT INTO `users` (`user_name`, `password_hash`) VALUES (?, ?)");
-      $params = array($this->username, $this->password);
+      $params = array($this->username, password_hash($this->password, PASSWORD_DEFAULT)); // hash password before saving
+
       if($stmt->execute($params)){
         $this->id = $this->pdo->lastInsertId();
         return new Response(true, "Successfuly created new User.", $this->safe(), null);
       }
-      return new Response(false, "Couldn't create new User.", null, null);
+
+      return new Response(false, "Couldn't create new User.", null, null); // TODO Can't remember why this is here, I think it means invalid syntax?
     }catch(PDOException $e){
       return $this->db->errorHandler($e);
+    }
+  }
+
+  private function validatePassword($password){
+    if(gettype($password) == "string"){
+      $length = strlen($password)''
+      if($length > 0 && $length <= 32){
+        if()
+      }
     }
   }
 }
