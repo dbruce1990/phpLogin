@@ -57,14 +57,15 @@ class DatabaseHandler{
       }
 
       public function errorHandler($e){
-        // if(get_type($e) == "PDOException"){}
+          echo "PDOExceptionasdf";
         switch($e->getCode()){
           case "23000": //duplicate found.
-          return new Response(false, "Username already taken.", $e, $e->getCode());
+          echo new Response(false, "Username already taken.", $e, $e->getCode());
           break;
           default:
-          return new Response(false, "Woops, there was an error with the database.", $e, $e->getCode());
+          echo new Response(false, "Woops, an error occured in the database.", $e, $e->getCode());
         }
+        exit(); // an error occured and we responded. Lets end script so we can handle it in client
       }
 
     }
