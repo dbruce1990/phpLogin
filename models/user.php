@@ -25,7 +25,8 @@ class UserModel extends BaseModel{
   public function getPassword(){ return $this->password; }
   public function setPassword($password, $password_confirmed){
     if($this->validatePasswords($password, $password_confirmed)){
-      $this->password = password_hash($this->password, PASSWORD_DEFAULT); // hash the password
+      $this->password = password_hash($password, PASSWORD_DEFAULT); // hash the password
+      echo $this->password;
       return true;
     }
     return false;
@@ -58,6 +59,28 @@ class UserModel extends BaseModel{
     return false;
   }
 
+  public function authenticate($username, $password){
+    try{
+      $stmt = $this->pdo->prepare("SELECT password_hash from users WHERE user_name=? LIMIT 1");
+      $params = [$username];
+      if($stmt->execute($params)){
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        // print_r($row);
+        if(password_verify($password, $row["password_hash"])){
+          $stmt = $this->pdo->prepare("UPDATE users SET last_login=NOW() WHERE user_name=?");
+          $params = array($username);
+          $stmt->execute($params);
+          if($stmt->rowCount() > 0){
+            return true;
+          }
+        }
+    }
+    }catch(PDOException $e){
+      $this->db->errorHandler($e);
+    }
+    return false;
+  }
+
   private function validatePasswords($password, $password_confirmed){
     if($password === $password_confirmed){
       if(gettype($password) == "string"){
@@ -84,11 +107,5 @@ class UserModel extends BaseModel{
     return false;
   }
 
-  // public function safe(){
-  //   $result = array(
-  //     "username" => $this->username
-  //   );
-  //   return $result;
-  // }
 }
 ?>

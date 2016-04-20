@@ -21,7 +21,8 @@ class DatabaseHandler{
         $password = $config["database"]["password"];
 
         try{
-          $this->pdo = new PDO($dsn, $username, $password); //if parsing config.json was successful, attempt to connect
+          $settings = [PDO::MYSQL_ATTR_FOUND_ROWS => true];
+          $this->pdo = new PDO($dsn, $username, $password, $settings); // connect to db
           $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
           $this->pdo->query("CREATE DATABASE IF NOT EXISTS $dbname DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci; SET default_storage_engine=INNODB;");
